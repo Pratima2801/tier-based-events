@@ -1,3 +1,5 @@
+My deployed application: https://tier-based-events.vercel.app/sign-in
+
 # Tiered Events Showcase
 
 Demo app demonstrating tier-based access to events using:
@@ -55,7 +57,7 @@ npm install
 1. Create a Clerk application.  
 2. Configure redirect URLs to include:
    - `http://localhost:3000/*`  
-   - If deployed, your production domain (e.g., `https://yourapp.vercel.app/*`)  
+   - If deployed, your production domain (e.g., `https://tier-based-events.vercel.app/sign-in`)  
 3. In Clerk settings, ensure **single-session** mode is enabled (default) so signing in with an active session auto-redirects.  
 4. Get your keys:
    - Publishable/frontend API → `NEXT_PUBLIC_CLERK_FRONTEND_API`  
