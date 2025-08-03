@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tiered Events Showcase
 
-## Getting Started
+Demo app demonstrating tier-based access to events using:
+- **Frontend:** Next.js 14 (App Router) + Tailwind CSS  
+- **Auth:** Clerk.dev (single-session mode)  
+- **Database:** Supabase (PostgreSQL)  
+- **Tier Logic:** Users have tiers (`free`, `silver`, `gold`, `platinum`). Events above a user’s tier are visible but locked.
 
-First, run the development server:
+## Features
+
+- Clerk authentication with single-session semantics  
+- Catch-all sign-in route that stays on `/sign-in` when already logged in (shows sign-out)  
+- Tier stored in Clerk `publicMetadata` and optionally persisted into Supabase on **Refresh**  
+- Dropdown to simulate/upgrade tier:
+  - Defaults to authoritative tier from DB (fallbacks to Clerk tier if not persisted)  
+  - Current tier option is disabled  
+  - Changing tier updates Clerk metadata immediately and reflects in UI (without persisting)  
+- Refresh button persists current Clerk tier into Supabase (`sync`)  
+- All events are shown; higher-tier events are greyed out/locked with tooltip explaining upgrade requirement  
+- Root `/` redirects to `/sign-in`
+
+## Prerequisites
+
+- Node.js 18+  
+- npm, pnpm, or yarn  
+- Supabase account & project  
+- Clerk account & application  
+
+## Setup
+
+### 1. Clone and install
+
+```bash
+git clone <repo-url>
+cd tiered-events
+npm install
+```
+
+### 2. Supabase
+
+1. Create a Supabase project.  
+2. In SQL Editor, run `supabase/schema.sql` (or paste the following manually) to:
+   - Create `tier` enum  
+   - Create `events` table (seeded with sample events)  
+   - Create/alter `user_tiers` table (with `clerk_id` as `text`)  
+   - Enable RLS (optional; currently filtering is done in app logic)
+    
+3. Copy your Supabase project values:
+   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`  
+   - `anon/public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`  
+   - `Service Role Key` → `SUPABASE_SERVICE_ROLE_KEY` (keep secret, used only server-side)
+
+### 3. Clerk
+
+1. Create a Clerk application.  
+2. Configure redirect URLs to include:
+   - `http://localhost:3000/*`  
+   - If deployed, your production domain (e.g., `https://yourapp.vercel.app/*`)  
+3. In Clerk settings, ensure **single-session** mode is enabled (default) so signing in with an active session auto-redirects.  
+4. Get your keys:
+   - Publishable/frontend API → `NEXT_PUBLIC_CLERK_FRONTEND_API`  
+   - Secret key → `CLERK_SECRET_KEY`
+
+   
+### 4. Run Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit: `http://localhost:3000` → auto-redirects to `/sign-in`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5. Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deploy to Vercel or similar:
+- Set the same env vars in the dashboard.  
+- Update Clerk redirect URLs to include your production domain.  
+- Root path redirects to `/sign-in` automatically via `app/page.tsx`.
 
-## Learn More
+## Enhancements
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Add a modal or payment simulation to upgrade tiers formally.  
+- Cache event data client-side with SWR for smoother UX.  
+- Implement audit log of tier changes in Supabase.  
+- Add tests (Vitest / Jest) for API route behavior.
