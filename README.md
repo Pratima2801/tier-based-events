@@ -1,5 +1,13 @@
 My deployed application: https://tier-based-events.vercel.app/sign-in
+My YouTube Demo link: https://youtu.be/PFOitTU1Kco
 
+Demo User Credentials
+  1. Id- prathima4915@gmail.com
+     password- Ammulu28$
+  2. Id_ pratimabhadraiahgari@gmail.com
+    password- Ammu2899$
+    
+       
 # Tiered Events Showcase
 
 Demo app demonstrating tier-based access to events using:
